@@ -15,7 +15,16 @@ App Manifest:
         "bot_user": {
             "display_name": "ai",
             "always_online": true
-        }
+        },
+        "slash_commands": [
+            {
+                "command": "/ai",
+                "url": "https://tg-slack-ai.fly.dev/slack/events",
+                "description": "Set/Get AI Config",
+                "usage_hint": "[getsystemprompt | setsystemprompt] value",
+                "should_escape": false
+            }
+        ]
     },
     "oauth_config": {
         "scopes": {
@@ -29,13 +38,14 @@ App Manifest:
                 "mpim:write",
                 "mpim:read",
                 "groups:history",
-                "im:history"
+                "im:history",
+                "commands"
             ]
         }
     },
     "settings": {
         "event_subscriptions": {
-            "request_url": "https://aabb945aecaf.ngrok.app/slack/events",
+            "request_url": "https://tg-slack-ai.fly.dev/slack/events",
             "bot_events": [
                 "app_mention",
                 "message.channels",
