@@ -1,15 +1,6 @@
-# Prepare
-create `.env` with these secrets:
-
-```
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxxxxxxxxxxxxxx
-SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
-```
-
 # Development
 ## Create Slack App
-You should create app.
+You should create the app at Slack API (https://api.slack.com) page before starting development.
 
 App Manifest:
 
@@ -60,11 +51,27 @@ App Manifest:
 }
 ```
 
-Paste this on App Manifest page:
+To configure app, paste this on App Manifest page:
 
 https://app.slack.com/app-settings/xxxxx/xxxxx/app-manifest
 
 All needed permissions to work this app are predefined in this manifest, so you don't need configure manually by clicking annoying on config page!
+
+**DO NOT OVERWRITE CONFIGURE PRODUCTION ai-chan app!**
+
+You should develop on your own app, not ai-chan production.
+
+## Install app
+Install created app to the workspace.
+
+## Prepare Environment Variables
+create `.env` with these secrets:
+
+```
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxxxxxxxxxxxxxx
+SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+```
 
 ## Run
 run server with:
