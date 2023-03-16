@@ -124,6 +124,12 @@ undefined
 '語尾ににゃをつければにゃ。にゃんにゃん。'
 ```
 
+You can retrieve models by:
+
+```
+(await new ChatGPT(process.env.OPENAI_API_KEY).listModels()).data
+```
+
 ## Deploy
 ```
 flyctl secrets import < .env
