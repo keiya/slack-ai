@@ -81,6 +81,39 @@ npm run dev
 
 you may need ngrok
 
+## Debug Repl
+You can use REPL for debug purposes.
+
+```
+% npm run debug
+
+> openai@1.0.0 debug
+> ts-node src/repl.ts
+
+> const gpt = new ChatGPT(process.env.OPENAI_API_KEY)
+undefined
+> await gpt.ask("語尾ににゃをつけて")
+{
+  id: 'chatcmpl-6unkIG0TNPJHqFbtLaGrZcOv3UgZr',
+  object: 'chat.completion',
+  created: 1678995610,
+  model: 'gpt-3.5-turbo-0301',
+  usage: { prompt_tokens: 19, completion_tokens: 42, total_tokens: 61 },
+  choices: [ { message: [Object], finish_reason: 'stop', index: 0 } ]
+}
+'「こんにちはにゃ！」「ありがとうにゃ♪」「ごめんにゃさい」「おやすみにゃん♪」「いただきにゃ！」など。'
+> await gpt.ask("語尾になんてつければいいんだっけ？")
+{
+  id: 'chatcmpl-6unkWbxSXsSYSitzwBxlUAYAvWkkt',
+  object: 'chat.completion',
+  created: 1678995624,
+  model: 'gpt-3.5-turbo-0301',
+  usage: { prompt_tokens: 43, completion_tokens: 27, total_tokens: 70 },
+  choices: [ { message: [Object], finish_reason: 'stop', index: 0 } ]
+}
+'語尾ににゃをつければにゃ。にゃんにゃん。'
+```
+
 ## Deploy
 ```
 flyctl secrets import < .env
