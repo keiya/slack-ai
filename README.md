@@ -71,3 +71,9 @@ npm run dev
 ```
 
 you may need ngrok
+
+## Deploy
+```
+flyctl secrets import < .env
+flyctl deploy
+```

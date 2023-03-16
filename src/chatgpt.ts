@@ -24,6 +24,7 @@ export class ChatGPT {
           content: prompt,
         }],
       });
+      console.log(response.data)
       const generatedText = (response.data.choices[0] as any).message.content;
       return generatedText as string;
     } catch (error) {

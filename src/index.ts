@@ -16,13 +16,17 @@ const openaiApiKey = process.env.OPENAI_API_KEY || '';
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  customRoutes: [{
+    path: '/',
+    method: 'GET',
+    handler: (req, res) => { res.writeHead(200); res.end(); },
+  }]
 });
 
 
 // メッセージリスナー
 app.event("message", async ({ event, client }) => {
   const prompt = (<any>event).text;
-console.log(prompt)
   const response = await gpt.ask(prompt);
 
   try {
