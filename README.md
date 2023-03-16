@@ -11,7 +11,7 @@ SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 ## Create Slack App
 You should create app.
 
-Manifest (you can easily configure without clicking many times...):
+App Manifest:
 
 ```json
 {
@@ -63,6 +63,8 @@ Manifest (you can easily configure without clicking many times...):
 Paste this on App Manifest page:
 
 https://app.slack.com/app-settings/xxxxx/xxxxx/app-manifest
+
+All needed permissions to work this app are predefined in this manifest, so you don't need configure manually by clicking annoying on config page!
 
 ## Run
 run server with:
