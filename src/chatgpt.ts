@@ -9,6 +9,7 @@ interface Memory {
 export class ChatGPT {
   private openai: OpenAIApi
   private chatMemories: RingBuffer<Memory>
+  public systemPrompt: ChatCompletionRequestMessage
 
   constructor(apikey: string) {
     const configuration = new Configuration({
@@ -17,6 +18,7 @@ export class ChatGPT {
     });
     this.openai = new OpenAIApi(configuration);
     this.chatMemories = new RingBuffer<Memory>(10)
+    this.systemPrompt = { role: "system", content: "" }
   }
 
   listModels() {
@@ -29,7 +31,7 @@ export class ChatGPT {
       const pastMessages: ChatCompletionRequestMessage[] = pastMemories.map(m => { return { role: "user", content: m.prompt } })
       const response = await this.openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: pastMessages.concat([{
+        messages: [this.systemPrompt].concat(pastMessages).concat([{
           role: "user",
           content: prompt,
         }]),

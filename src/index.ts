@@ -1,4 +1,4 @@
-import { App, ExpressReceiver } from "@slack/bolt";
+import { App } from "@slack/bolt";
 import axios from "axios";
 import { ChatGPT } from "./chatgpt";
 import 'dotenv/config'
@@ -36,6 +36,23 @@ app.event("message", async ({ event, client }) => {
     });
   } catch (error) {
     console.error("Error posting message to Slack:", error);
+  }
+});
+
+app.command("/ai", async ({ command, ack, respond }) => {
+  await ack();
+
+  console.log(command)
+
+  const verb = command.split(' ')
+  switch (verb) {
+    case 'getsystemprompt':
+      await respond(`> Showing system role prompt: ${gpt.systemPrompt.content}`);
+      break;
+    case 'setsystemprompt':
+      gpt.systemPrompt.content = verb[1]
+      await respond(`> [SET] Setting system role prompt`);
+      break;
   }
 });
 
