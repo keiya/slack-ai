@@ -1,0 +1,41 @@
+image: 'node:18-slim'
+
+cache:
+  key: $CI_COMMIT_REF_NAME
+  paths:
+    - node_modules
+
+stages:
+  - prepare
+  - build
+  - deploy
+
+npm-install:
+  stage: prepare
+  script:
+    - npm install
+
+build:
+  stage: build
+  variables:
+    NODE_ENV: production
+    OUTPUT_DIR: dist
+  script:
+    - npm run build
+    - test -e $OUTPUT_DIR
+  artifacts:
+    expire_in: 1w
+    paths:
+      - $OUTPUT_DIR
+      - sourcemap
+
+deploy-staging:
+  stage: deploy
+  variables:
+    NODE_ENV: production
+    FLY_ACCESS_TOKEN: $FLY_ACCESS_TOKEN
+  script:
+    - curl -L https://fly.io/install.sh | sh
+    - ~/.fly/bin/flyctl deploy -c fly.toml
+  only:
+    - deploy-staging
