@@ -1,5 +1,4 @@
 import { App } from "@slack/bolt";
-import axios from "axios";
 import { ChatGPT } from "./chatgpt";
 import 'dotenv/config'
 
@@ -7,11 +6,6 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("apikey is not set")
 }
 const gpt = new ChatGPT(process.env.OPENAI_API_KEY)
-
-// // 環境変数から設定を取得
-const slackBotToken = process.env.SLACK_BOT_TOKEN || '';
-const slackSigningSecret = process.env.SLACK_SIGNING_SECRET || '';
-const openaiApiKey = process.env.OPENAI_API_KEY || '';
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
