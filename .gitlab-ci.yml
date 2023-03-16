@@ -1,4 +1,4 @@
-image: 'node:18-slim'
+image: 'node:18-alpine'
 
 cache:
   key: $CI_COMMIT_REF_NAME
@@ -35,6 +35,7 @@ deploy-staging:
     NODE_ENV: production
     FLY_ACCESS_TOKEN: $FLY_ACCESS_TOKEN
   script:
+    - apk --no-cache add curl
     - curl -L https://fly.io/install.sh | sh
     - ~/.fly/bin/flyctl deploy -c fly.toml
   only:
