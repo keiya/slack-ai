@@ -44,13 +44,13 @@ app.command("/ai", async ({ command, ack, respond }) => {
 
   console.log(command)
 
-  const verb = command.split(' ')
-  switch (verb) {
+  const cmd = command.text.split(' ')
+  switch (cmd[0]) {
     case 'getsystemprompt':
       await respond(`> Showing system role prompt: ${gpt.systemPrompt.content}`);
       break;
     case 'setsystemprompt':
-      gpt.systemPrompt.content = verb[1]
+      gpt.systemPrompt.content = cmd[1]
       await respond(`> [SET] Setting system role prompt`);
       break;
   }
