@@ -28,6 +28,11 @@ app.event("message", async (args: MessageArgs) => {
 
   console.log(event)
 
+  if ('bot_id' in event && Math.random() < 0.5) {
+    console.log('ignoring bot')
+    return
+  }
+
   // feed chat message with user id
   const prompt = `<@${event.user}>: ${event.text}`;
   const response = await gpt.ask(prompt, event.user);
