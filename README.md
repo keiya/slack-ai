@@ -1,5 +1,7 @@
 # Development
+
 ## Create Slack App
+
 You should create the app at Slack API (https://api.slack.com) page before starting development.
 
 (CHANGE URL if you're going to developing locally!)
@@ -8,58 +10,58 @@ App Manifest:
 
 ```json
 {
-    "display_information": {
-        "name": "ai",
-        "description": "powered by chatgpt",
-        "background_color": "#59423b"
+  "display_information": {
+    "name": "ai",
+    "description": "powered by chatgpt",
+    "background_color": "#59423b"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "ai",
+      "always_online": true
     },
-    "features": {
-        "bot_user": {
-            "display_name": "ai",
-            "always_online": true
-        },
-        "slash_commands": [
-            {
-                "command": "/ai",
-                "url": "https://tg-slack-ai.fly.dev/slack/events",
-                "description": "Set/Get AI Config",
-                "usage_hint": "[getsystemprompt | setsystemprompt] value",
-                "should_escape": false
-            }
-        ]
-    },
-    "oauth_config": {
-        "scopes": {
-            "bot": [
-                "app_mentions:read",
-                "chat:write",
-                "im:read",
-                "channels:history",
-                "im:write",
-                "mpim:history",
-                "mpim:write",
-                "mpim:read",
-                "groups:history",
-                "im:history",
-                "commands"
-            ]
-        }
-    },
-    "settings": {
-        "event_subscriptions": {
-            "request_url": "https://tg-slack-ai.fly.dev/slack/events",
-            "bot_events": [
-                "app_mention",
-                "message.channels",
-                "message.groups",
-                "message.im",
-                "message.mpim"
-            ]
-        },
-        "org_deploy_enabled": false,
-        "socket_mode_enabled": false,
-        "token_rotation_enabled": false
+    "slash_commands": [
+      {
+        "command": "/ai",
+        "url": "https://tg-slack-ai.fly.dev/slack/events",
+        "description": "Set/Get AI Config",
+        "usage_hint": "[getsystemprompt | setsystemprompt] value",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "chat:write",
+        "im:read",
+        "channels:history",
+        "im:write",
+        "mpim:history",
+        "mpim:write",
+        "mpim:read",
+        "groups:history",
+        "im:history",
+        "commands"
+      ]
     }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://tg-slack-ai.fly.dev/slack/events",
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  }
 }
 ```
 
@@ -74,9 +76,11 @@ All needed permissions to work this app are predefined in this manifest, so you 
 You should develop on your own app, not ai-chan production.
 
 ## Install app
+
 Install created app to the workspace.
 
 ## Prepare Environment Variables
+
 create `.env` with these secrets:
 
 ```
@@ -86,7 +90,9 @@ SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Run
+
 run server with:
+
 ```
 npm run dev
 ```
@@ -94,6 +100,7 @@ npm run dev
 you may need ngrok
 
 ## Debug Repl
+
 You can use REPL for debug purposes.
 
 ```
@@ -133,6 +140,7 @@ You can retrieve models by:
 ```
 
 ## Deploy
+
 ```
 flyctl secrets import < .env.production
 flyctl deploy

@@ -1,15 +1,16 @@
+export type Item<T> = T | null;
 export class RingBuffer<T> {
-  private data: T[];
-  private head: number = 0;
-  private tail: number = 0;
-  private size: number;
+  private data: Array<Item<T>>;
+  private head = 0;
+  private tail = 0;
+  private readonly size: number;
 
   constructor(size: number) {
-    this.data = new Array<T>(size);
+    this.data = Array<Item<T>>();
     this.size = size;
   }
 
-  public enqueue(item: T): void {
+  public enqueue(item: Item<T>): void {
     if (this.isFull()) {
       this.dequeue();
     }
@@ -17,19 +18,19 @@ export class RingBuffer<T> {
     this.tail = (this.tail + 1) % this.size;
   }
 
-  public dequeue(): T | undefined {
+  public dequeue(): Item<T> {
     if (this.isEmpty()) {
-      return undefined;
+      return null;
     }
     const item = this.data[this.head];
-    this.data[this.head] = null as any;
+    this.data[this.head] = null;
     this.head = (this.head + 1) % this.size;
     return item;
   }
 
-  public peek(): T | undefined {
+  public peek(): Item<T> {
     if (this.isEmpty()) {
-      return undefined;
+      return null;
     }
     return this.data[this.head];
   }
@@ -46,8 +47,8 @@ export class RingBuffer<T> {
     return this.size;
   }
 
-  public toArray(): T[] {
-    const result: T[] = [];
+  public toArray(): Array<Item<T>> {
+    const result = Array<Item<T>>();
     for (let i = this.head; i !== this.tail; i = (i + 1) % this.size) {
       result.push(this.data[i]);
     }
