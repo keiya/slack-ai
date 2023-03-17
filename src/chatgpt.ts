@@ -2,8 +2,9 @@ import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
 import { RingBuffer } from "./ringbuffer";
 
 interface Memory {
-  askedAt: Date,
-  prompt: string,
+  createdAt: Date,
+  role: 'assistant' | 'user',
+  content: string,
 }
 
 export class ChatGPT {
@@ -17,7 +18,7 @@ export class ChatGPT {
       apiKey: apikey,
     });
     this.openai = new OpenAIApi(configuration);
-    this.chatMemories = new RingBuffer<Memory>(10)
+    this.chatMemories = new RingBuffer<Memory>(20)
     this.systemPrompt = { role: "system", content: "" }
   }
 
@@ -25,20 +26,25 @@ export class ChatGPT {
     return this.openai.listModels();
   }
 
-  async ask(prompt: string): Promise<string> {
+  async ask(prompt: string, user?: string): Promise<string> {
+    console.log(`ask: ${prompt} [${user}]`)
     try {
       const pastMemories = this.chatMemories.toArray()
-      const pastMessages: ChatCompletionRequestMessage[] = pastMemories.map(m => { return { role: "user", content: m.prompt } })
+      const pastMessages: ChatCompletionRequestMessage[] = pastMemories.map(m => {
+        return { role: m.role, content: m.content }
+      })
       const response = await this.openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [this.systemPrompt].concat(pastMessages).concat([{
           role: "user",
           content: prompt,
         }]),
+        user,
       });
       console.log(response.data)
       const generatedText = (response.data.choices[0] as any).message.content;
-      this.chatMemories.enqueue({ askedAt: new Date(), prompt })
+      this.chatMemories.enqueue({ createdAt: new Date(), role: 'user', content: prompt })
+      this.chatMemories.enqueue({ createdAt: new Date(), role: 'assistant', content: generatedText })
       return generatedText as string;
     } catch (error) {
       console.error("Error calling ChatGPT API:", error);

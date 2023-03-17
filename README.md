@@ -2,6 +2,8 @@
 ## Create Slack App
 You should create the app at Slack API (https://api.slack.com) page before starting development.
 
+(CHANGE URL if you're going to developing locally!)
+
 App Manifest:
 
 ```json
@@ -132,6 +134,6 @@ You can retrieve models by:
 
 ## Deploy
 ```
-flyctl secrets import < .env
+flyctl secrets import < .env.production
 flyctl deploy
 ```

@@ -1,6 +1,8 @@
-import { App } from "@slack/bolt";
+import { App, SlackEventMiddlewareArgs, AllMiddlewareArgs, GenericMessageEvent } from "@slack/bolt";
 import { ChatGPT } from "./chatgpt";
 import 'dotenv/config'
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("apikey is not set")
@@ -17,11 +19,18 @@ const app = new App({
   }]
 });
 
+type MessageArgs = SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs;
 
 // メッセージリスナー
-app.event("message", async ({ event, client }) => {
-  const prompt = (<any>event).text;
-  const response = await gpt.ask(prompt);
+app.event("message", async (args: MessageArgs) => {
+  const event = args.event as GenericMessageEvent
+  const client = args.client
+
+  console.log(event)
+
+  // feed chat message with user id
+  const prompt = `<@${event.user}>: ${event.text}`;
+  const response = await gpt.ask(prompt, event.user);
 
   try {
     await client.chat.postMessage({
@@ -48,6 +57,11 @@ app.command("/ai", async ({ command, ack, respond }) => {
       await respond(`> [SET] Setting system role prompt`);
       break;
   }
+});
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
 });
 
 // // Boltアプリの起動
