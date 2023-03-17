@@ -37,7 +37,7 @@ app.event('message', async (args: MessageArgs) => {
 
   console.log(event);
 
-  if ('bot_id' in event && Math.random() < 0.5) {
+  if ('bot_id' in event && Math.random() < 0.25) {
     console.log('ignoring bot');
     return;
   }
