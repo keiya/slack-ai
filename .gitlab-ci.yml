@@ -7,6 +7,7 @@ cache:
 
 stages:
   - prepare
+  - test
   - build
   - deploy
 
@@ -15,8 +16,21 @@ npm-install:
   script:
     - npm install
 
+prettier:
+  stage: prepare
+  needs: [npm-install]
+  script:
+    - npm run prettier
+
+eslint:
+  stage: prepare
+  needs: [npm-install]
+  script:
+    - npm run eslint
+
 build:
   stage: build
+  needs: [npm-install]
   variables:
     NODE_ENV: production
     OUTPUT_DIR: dist
@@ -31,6 +45,8 @@ build:
 
 deploy-staging:
   stage: deploy
+  needs: [build]
+  dependencies: [build]
   variables:
     NODE_ENV: production
     FLY_ACCESS_TOKEN: $FLY_ACCESS_TOKEN
