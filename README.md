@@ -87,6 +87,9 @@ create `.env` with these secrets:
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+
+# Needed if using socket mode
+SLACK_APP_TOKEN=xapp-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Run

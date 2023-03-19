@@ -15,6 +15,8 @@ const gpt = new ChatGPT(process.env.OPENAI_API_KEY, process.env.SYSTEM_MESSAGE);
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
+  socketMode: process.env.SLACK_APP_TOKEN ? true : false,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   customRoutes: [
     {
@@ -45,6 +47,17 @@ app.event('message', async (args: MessageArgs) => {
   // feed chat message with user id
   if (event.text != null) {
     const prompt = `<@${event.user}>: ${event.text}`;
+
+    try {
+      await client.reactions.add({
+        channel: event.channel,
+        name: 'thinking_face',
+        timestamp: event.ts,
+      });
+    } catch (error) {
+      console.error('Error adding emoji to Slack:', error);
+    }
+
     const response = await gpt.ask(prompt, event.user);
 
     if (response == null) {
@@ -55,6 +68,11 @@ app.event('message', async (args: MessageArgs) => {
       await client.chat.postMessage({
         channel: event.channel,
         text: response,
+      });
+      await client.reactions.remove({
+        channel: event.channel,
+        name: 'thinking_face',
+        timestamp: event.ts,
       });
     } catch (error) {
       console.error('Error posting message to Slack:', error);
@@ -84,6 +102,7 @@ app.command('/ai', async ({ command, ack, respond }) => {
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
+  enabled: process.env.NODE_ENV == 'production',
 });
 
 // // Boltアプリの起動

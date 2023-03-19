@@ -23,7 +23,7 @@ export class ChatGPT {
     });
     this.openai = new OpenAIApi(configuration);
     this.chatMemories = new RingBuffer<Memory>(20);
-    this.systemPrompt = { role: 'user', content: defaultSystemMessage ?? '' };
+    this.systemPrompt = { role: 'system', content: defaultSystemMessage ?? '' };
   }
 
   // async listModels () {
@@ -31,9 +31,7 @@ export class ChatGPT {
   // }
 
   async ask(prompt: string, user?: string): Promise<string | null> {
-    if (user != null) {
-      console.log(`ask: ${prompt} [${user}]`);
-    }
+    console.log(`ask: ${prompt}`);
     try {
       const filterDatetime = Date.now() - 1000 * 3600 * 3;
       const pastMemories: Memory[] = this.chatMemories
@@ -45,14 +43,18 @@ export class ChatGPT {
           return { role: m.role, content: m.content };
         }
       );
+      const messages = [this.systemPrompt].concat(pastMessages).concat([
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ]).filter(m => m.content.length > 0)
+
+      console.log(messages)
+
       const response = await this.openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: [this.systemPrompt].concat(pastMessages).concat([
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ]),
+        messages,
         user,
       });
       console.log(response.data);
