@@ -23,7 +23,7 @@ export class ChatGPT {
     });
     this.openai = new OpenAIApi(configuration);
     this.chatMemories = new RingBuffer<Memory>(20);
-    this.systemPrompt = { role: 'user', content: defaultSystemMessage || '' };
+    this.systemPrompt = { role: 'user', content: defaultSystemMessage ?? '' };
   }
 
   // async listModels () {
