@@ -35,9 +35,11 @@ export class ChatGPT {
       console.log(`ask: ${prompt} [${user}]`);
     }
     try {
+      const filterDatetime = Date.now() - 1000 * 3600 * 3;
       const pastMemories: Memory[] = this.chatMemories
         .toArray()
-        .filter((m): m is Memory => m !== null);
+        .filter((m): m is Memory => m !== null)
+        .filter((m) => m.createdAt.getTime() > filterDatetime);
       const pastMessages: ChatCompletionRequestMessage[] = pastMemories.map(
         (m) => {
           return { role: m.role, content: m.content };
