@@ -10,57 +10,57 @@ App Manifest:
 
 ```json
 {
-    "display_information": {
-        "name": "ai2",
-        "description": "powered by chatgpt",
-        "background_color": "#59423b"
+  "display_information": {
+    "name": "ai2",
+    "description": "powered by chatgpt",
+    "background_color": "#59423b"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "ai2",
+      "always_online": true
     },
-    "features": {
-        "bot_user": {
-            "display_name": "ai2",
-            "always_online": false
-        },
-        "slash_commands": [
-            {
-                "command": "/ai2",
-                "description": "Set/Get AI Config",
-                "usage_hint": "[getsystemprompt | setsystemprompt] value",
-                "should_escape": false
-            }
-        ]
-    },
-    "oauth_config": {
-        "scopes": {
-            "bot": [
-                "app_mentions:read",
-                "channels:history",
-                "chat:write",
-                "commands",
-                "groups:history",
-                "im:history",
-                "im:read",
-                "im:write",
-                "mpim:history",
-                "mpim:read",
-                "mpim:write",
-                "reactions:write"
-            ]
-        }
-    },
-    "settings": {
-        "event_subscriptions": {
-            "bot_events": [
-                "app_mention",
-                "message.channels",
-                "message.groups",
-                "message.im",
-                "message.mpim"
-            ]
-        },
-        "org_deploy_enabled": false,
-        "socket_mode_enabled": true,
-        "token_rotation_enabled": false
+    "slash_commands": [
+      {
+        "command": "/ai2",
+        "description": "Set/Get AI Config",
+        "usage_hint": "[getsystemprompt | setsystemprompt] value",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:history",
+        "chat:write",
+        "commands",
+        "groups:history",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "reactions:write"
+      ]
     }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  }
 }
 ```
 
