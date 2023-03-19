@@ -16,14 +16,14 @@ export class ChatGPT {
   private readonly chatMemories: RingBuffer<Memory>;
   public systemPrompt: ChatCompletionRequestMessage;
 
-  constructor(apikey: string) {
+  constructor(apikey: string, defaultSystemMessage?: string) {
     const configuration = new Configuration({
       organization: 'org-XUoM8TRtZzA8sbvDF8q2TRlX',
       apiKey: apikey,
     });
     this.openai = new OpenAIApi(configuration);
     this.chatMemories = new RingBuffer<Memory>(20);
-    this.systemPrompt = { role: 'system', content: '' };
+    this.systemPrompt = { role: 'user', content: defaultSystemMessage || '' };
   }
 
   // async listModels () {

@@ -11,7 +11,7 @@ import * as Sentry from '@sentry/node';
 if (process.env.OPENAI_API_KEY == null) {
   throw new Error('apikey is not set');
 }
-const gpt = new ChatGPT(process.env.OPENAI_API_KEY);
+const gpt = new ChatGPT(process.env.OPENAI_API_KEY, process.env.SYSTEM_MESSAGE);
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
