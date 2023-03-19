@@ -10,58 +10,57 @@ App Manifest:
 
 ```json
 {
-  "display_information": {
-    "name": "ai",
-    "description": "powered by chatgpt",
-    "background_color": "#59423b"
-  },
-  "features": {
-    "bot_user": {
-      "display_name": "ai",
-      "always_online": true
+    "display_information": {
+        "name": "ai2",
+        "description": "powered by chatgpt",
+        "background_color": "#59423b"
     },
-    "slash_commands": [
-      {
-        "command": "/ai",
-        "url": "https://tg-slack-ai.fly.dev/slack/events",
-        "description": "Set/Get AI Config",
-        "usage_hint": "[getsystemprompt | setsystemprompt] value",
-        "should_escape": false
-      }
-    ]
-  },
-  "oauth_config": {
-    "scopes": {
-      "bot": [
-        "app_mentions:read",
-        "chat:write",
-        "im:read",
-        "channels:history",
-        "im:write",
-        "mpim:history",
-        "mpim:write",
-        "mpim:read",
-        "groups:history",
-        "im:history",
-        "commands"
-      ]
+    "features": {
+        "bot_user": {
+            "display_name": "ai2",
+            "always_online": false
+        },
+        "slash_commands": [
+            {
+                "command": "/ai2",
+                "description": "Set/Get AI Config",
+                "usage_hint": "[getsystemprompt | setsystemprompt] value",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "app_mentions:read",
+                "channels:history",
+                "chat:write",
+                "commands",
+                "groups:history",
+                "im:history",
+                "im:read",
+                "im:write",
+                "mpim:history",
+                "mpim:read",
+                "mpim:write",
+                "reactions:write"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "bot_events": [
+                "app_mention",
+                "message.channels",
+                "message.groups",
+                "message.im",
+                "message.mpim"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": true,
+        "token_rotation_enabled": false
     }
-  },
-  "settings": {
-    "event_subscriptions": {
-      "request_url": "https://tg-slack-ai.fly.dev/slack/events",
-      "bot_events": [
-        "app_mention",
-        "message.channels",
-        "message.groups",
-        "message.im",
-        "message.mpim"
-      ]
-    },
-    "org_deploy_enabled": false,
-    "socket_mode_enabled": false,
-    "token_rotation_enabled": false
-  }
 }
 ```
 
@@ -87,8 +86,6 @@ create `.env` with these secrets:
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
-
-# Needed if using socket mode
 SLACK_APP_TOKEN=xapp-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
@@ -100,7 +97,7 @@ run server with:
 npm run dev
 ```
 
-you may need ngrok
+you don't need ngrok.
 
 ## Debug Repl
 

@@ -16,7 +16,7 @@ const gpt = new ChatGPT(process.env.OPENAI_API_KEY, process.env.SYSTEM_MESSAGE);
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   appToken: process.env.SLACK_APP_TOKEN,
-  socketMode: process.env.SLACK_APP_TOKEN ? true : false,
+  socketMode: Boolean(process.env.SLACK_APP_TOKEN),
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   customRoutes: [
     {
@@ -102,7 +102,7 @@ app.command('/ai', async ({ command, ack, respond }) => {
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
-  enabled: process.env.NODE_ENV == 'production',
+  enabled: process.env.NODE_ENV === 'production',
 });
 
 // // Boltアプリの起動

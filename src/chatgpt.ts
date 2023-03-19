@@ -43,14 +43,17 @@ export class ChatGPT {
           return { role: m.role, content: m.content };
         }
       );
-      const messages = [this.systemPrompt].concat(pastMessages).concat([
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ]).filter(m => m.content.length > 0)
+      const messages = [this.systemPrompt]
+        .concat(pastMessages)
+        .concat([
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ])
+        .filter((m) => m.content.length > 0);
 
-      console.log(messages)
+      console.log(messages);
 
       const response = await this.openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
