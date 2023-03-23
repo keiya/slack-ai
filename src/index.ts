@@ -18,6 +18,7 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: Boolean(process.env.SLACK_APP_TOKEN),
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  port: 12001,
   customRoutes: [
     {
       path: '/',
@@ -93,7 +94,7 @@ app.command('/ai', async ({ command, ack, respond }) => {
       );
       break;
     case 'setsystemprompt':
-      gpt.systemPrompt.content = cmd[1];
+      gpt.systemPrompt.content = cmd[1] ?? '';
       await respond('> [SET] Setting system role prompt');
       break;
   }
