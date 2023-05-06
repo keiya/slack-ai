@@ -26,9 +26,9 @@ export class ChatGPT {
     this.systemPrompt = { role: 'system', content: defaultSystemMessage ?? '' };
   }
 
-  // async listModels () {
-  //   return await this.openai.listModels()
-  // }
+  async listModels () {
+    return await this.openai.listModels()
+  }
 
   async ask(prompt: string, user?: string): Promise<string | null> {
     console.log(`ask: ${prompt}`);

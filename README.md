@@ -70,6 +70,8 @@ https://app.slack.com/app-settings/xxxxx/xxxxx/app-manifest
 
 All needed permissions to work this app are predefined in this manifest, so you don't need configure manually by clicking annoying on config page!
 
+You need SLACK_APP_TOKEN if you want to use Socket Mode. Webhook mode is also available without SLACK_APP_TOKEN.
+
 **DO NOT OVERWRITE CONFIGURE PRODUCTION ai-chan app!**
 
 You should develop on your own app, not ai-chan production.
@@ -87,6 +89,8 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 SLACK_APP_TOKEN=xapp-xxxxxxxxxxxxxxxxxxxxxxxx
+SENTRY_DSN=
+SYSTEM_MESSAGE=
 ```
 
 ## Run
