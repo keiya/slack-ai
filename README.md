@@ -135,6 +135,8 @@ undefined
   choices: [ { message: [Object], finish_reason: 'stop', index: 0 } ]
 }
 '語尾ににゃをつければにゃ。にゃんにゃん。'
+
+> await (new ChatGPT(process.env.OPENAI_API_KEY)).ask("123*321^12")
 ```
 
 You can retrieve models by:

@@ -2,13 +2,20 @@ import {
   Configuration,
   OpenAIApi,
   type ChatCompletionRequestMessage,
+  type ChatCompletionRequestMessageFunctionCall,
 } from 'openai';
 import { RingBuffer } from './ringbuffer';
 
-interface Memory {
+import { Sandbox } from './sandbox';
+
+interface Memory extends ChatCompletionRequestMessage {
   createdAt: Date;
-  role: 'assistant' | 'user';
-  content: string;
+}
+
+interface ChatCompletionResult {
+  text: string;
+  funcRequest?: string;
+  funcResponse?: string;
 }
 
 export class ChatGPT {
@@ -22,12 +29,108 @@ export class ChatGPT {
       apiKey: apikey,
     });
     this.openai = new OpenAIApi(configuration);
-    this.chatMemories = new RingBuffer<Memory>(20);
+    this.chatMemories = new RingBuffer<Memory>(30);
     this.systemPrompt = { role: 'system', content: defaultSystemMessage ?? '' };
   }
 
   async listModels () {
     return await this.openai.listModels()
+  }
+
+  async functionCall(funcCall: ChatCompletionRequestMessageFunctionCall): Promise<string> {
+    let result = '';
+    if (!funcCall.arguments) return result
+    const funcArgs: any = JSON.parse(funcCall.arguments)
+    switch (funcCall.name) {
+      case 'javascript':
+        const js = funcArgs.script;
+        const sandbox = new Sandbox({});
+        result = sandbox.runScript(js);
+        break;
+      case 'get_from_url':
+        const url = funcArgs.url;
+        try {
+          result = await fetch(url).then((response) => response.text());
+        } catch (e) { console.error(e) }
+        break;
+      default:
+        console.error(`Unknown function: ${funcCall.name}`)
+        break
+    }
+    console.log("Func Exec: ", result)
+    return result
+  }
+
+  async requestChatCompletion(messages: ChatCompletionRequestMessage[], user?: string): Promise<ChatCompletionResult> {
+    const response = await this.openai.createChatCompletion({
+      model: 'gpt-3.5-turbo-0613',
+      messages,
+      user,
+      functions: [
+        {
+          name: 'javascript',
+          description: 'Run JavaScript code. Final value is returned.',
+          parameters: {
+            "type": "object",
+            "properties": {
+              "script": {
+                "type": "string",
+                "description": "JavaScript code to run"
+              },
+            },
+            "required": ["script"],
+          }
+        },
+        {
+          name: 'get_from_url',
+          description: 'Fetch from a URL. Returns the response body as a string.',
+          parameters: {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL to fetch from",
+              }
+            },
+            "required": ["url"],
+          }
+        },
+      ],
+      function_call: "auto",
+    });
+
+    const respMessage = response.data.choices[0].message
+    console.log(respMessage)
+
+    let generatedCompletion:ChatCompletionResult = { text: respMessage?.content || '' };
+
+    // if function call is requested by ChatGPT, execute
+    if (respMessage?.function_call) {
+      const funcCall = respMessage.function_call
+      if (!funcCall) return { text: '' };
+      const funcCallResult = JSON.stringify(await this.functionCall(funcCall))
+      const requestMessages = [
+        ({ ...respMessage } as ChatCompletionRequestMessage),
+        {
+          role: 'function',
+          name: funcCall.name,
+          content: funcCallResult,
+        } as ChatCompletionRequestMessage
+      ];
+      generatedCompletion = await this.requestChatCompletion(requestMessages, user)
+      generatedCompletion.funcRequest = JSON.stringify(funcCall)
+      generatedCompletion.funcResponse = funcCallResult
+    } else {
+      if (generatedCompletion.text != null) {
+        this.chatMemories.enqueue({
+          createdAt: new Date(),
+          role: 'assistant',
+          content: generatedCompletion.text,
+        });
+      }
+    }
+
+    return generatedCompletion;
   }
 
   async ask(prompt: string, user?: string): Promise<string | null> {
@@ -51,32 +154,29 @@ export class ChatGPT {
             content: prompt,
           },
         ])
-        .filter((m) => m.content.length > 0);
+        .filter((m) => m.content && m.content.length > 0);
 
       console.log(messages);
 
-      const response = await this.openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages,
-        user,
+      this.chatMemories.enqueue({
+        createdAt: new Date(),
+        role: 'user',
+        content: prompt,
       });
-      console.log(response.data);
-      const generatedText = response.data.choices[0].message?.content;
-      if (generatedText != null) {
-        this.chatMemories.enqueue({
-          createdAt: new Date(),
-          role: 'user',
-          content: prompt,
-        });
-        this.chatMemories.enqueue({
-          createdAt: new Date(),
-          role: 'assistant',
-          content: generatedText,
-        });
-        return generatedText;
-      } else {
-        return null;
+
+      const generatedCompletion = await this.requestChatCompletion(messages, user);
+
+      let resultText = ''
+      if (generatedCompletion.funcRequest) {
+        resultText += '```\nFunction Call:\n' + generatedCompletion.funcRequest + '\n```\n'
       }
+      if (generatedCompletion.funcResponse) {
+        resultText += '```\nFunction Result:\n' + generatedCompletion.funcResponse + '\n```\n\n'
+      }
+      resultText += generatedCompletion.text
+
+      return resultText
+
     } catch (error) {
       console.error('Error calling ChatGPT API:', error);
       throw error;

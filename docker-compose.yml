@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  slack-listener:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        NODE_ENV: production
+    command: npm run start
+    ports:
+      - '12001:12001'
+    links:
+      - redis
+    environment:
+      LANG: 'C.UTF-8'
+      POSTGRES_HOST: postgres
+      POSTGRES_TEST_HOST: postgres_tmpfs
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      RAILS_ENV: development
+      REDIS_URL: redis://redis:6379/0
+      SPRING_SOCKET: 'tmp/pids/spring.sock'
+      SPRING_SERVER_COMMAND: 'docker-compose up spring'
+      RUBYOPT: '-W:no-deprecated -W:no-experimental'
+      VITE_RUBY_HOST: vite-dev-server
+    volumes:
+      - .:/rails_app
+      - bundle-data:/usr/local/bundle
+    stdin_open: true
+    tty: true
