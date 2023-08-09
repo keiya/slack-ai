@@ -90,7 +90,7 @@ app.command('/ai', async ({ command, ack, respond }) => {
   switch (cmd[0]) {
     case 'getsystemprompt':
       await respond(
-        `> Showing system role prompt: ${gpt.systemPrompt.content}`
+        `> Showing system role prompt: ${gpt.systemPrompt.content ?? ''}`
       );
       break;
     case 'setsystemprompt':

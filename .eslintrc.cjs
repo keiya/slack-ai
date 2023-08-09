@@ -18,5 +18,5 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-explicit-any': 'error',
   },
-  ignorePatterns: ['.eslintrc.cjs'],
+  ignorePatterns: ['.eslintrc.cjs', 'dist/*/**'],
 };

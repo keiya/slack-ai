@@ -33,37 +33,50 @@ export class ChatGPT {
     this.systemPrompt = { role: 'system', content: defaultSystemMessage ?? '' };
   }
 
-  async listModels () {
-    return await this.openai.listModels()
-  }
+  // async listModels(): Promise<any> {
+  //   return await this.openai.listModels();
+  // }
 
-  async functionCall(funcCall: ChatCompletionRequestMessageFunctionCall): Promise<string> {
+  async functionCall(
+    funcCall: ChatCompletionRequestMessageFunctionCall
+  ): Promise<string> {
     let result = '';
-    if (!funcCall.arguments) return result
-    const funcArgs: any = JSON.parse(funcCall.arguments)
+    if (funcCall?.arguments == null || funcCall?.arguments === '')
+      return result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const funcArgs: any = JSON.parse(funcCall.arguments);
     switch (funcCall.name) {
-      case 'javascript':
+      case 'javascript': {
         const js = funcArgs.script;
         const sandbox = new Sandbox({});
         result = sandbox.runScript(js);
         break;
-      case 'get_from_url':
+      }
+      case 'get_from_url': {
         const url = funcArgs.url;
         try {
-          result = await fetch(url).then((response) => response.text());
-        } catch (e) { console.error(e) }
+          result = await fetch(url).then(
+            async (response) => await response.text()
+          );
+        } catch (e) {
+          console.error(e);
+        }
         break;
+      }
       default:
-        console.error(`Unknown function: ${funcCall.name}`)
-        break
+        console.error(`Unknown function called`);
+        break;
     }
-    console.log("Func Exec: ", result)
-    return result
+    console.log('Func Exec: ', result);
+    return result;
   }
 
-  async requestChatCompletion(messages: ChatCompletionRequestMessage[], user?: string): Promise<ChatCompletionResult> {
+  async requestChatCompletion(
+    messages: ChatCompletionRequestMessage[],
+    user?: string
+  ): Promise<ChatCompletionResult> {
     const response = await this.openai.createChatCompletion({
-      model: 'gpt-3.5-turbo-0613',
+      model: 'gpt-4',
       messages,
       user,
       functions: [
@@ -71,55 +84,60 @@ export class ChatGPT {
           name: 'javascript',
           description: 'Run JavaScript code. Final value is returned.',
           parameters: {
-            "type": "object",
-            "properties": {
-              "script": {
-                "type": "string",
-                "description": "JavaScript code to run"
+            type: 'object',
+            properties: {
+              script: {
+                type: 'string',
+                description: 'JavaScript code to run',
               },
             },
-            "required": ["script"],
-          }
+            required: ['script'],
+          },
         },
         {
           name: 'get_from_url',
-          description: 'Fetch from a URL. Returns the response body as a string.',
+          description:
+            'Fetch from a URL. Returns the response body as a string.',
           parameters: {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string",
-                "description": "URL to fetch from",
-              }
+            type: 'object',
+            properties: {
+              url: {
+                type: 'string',
+                description: 'URL to fetch from',
+              },
             },
-            "required": ["url"],
-          }
+            required: ['url'],
+          },
         },
       ],
-      function_call: "auto",
+      function_call: 'auto',
     });
 
-    const respMessage = response.data.choices[0].message
-    console.log(respMessage)
+    const respMessage = response.data.choices[0].message;
+    console.log(respMessage);
 
-    let generatedCompletion:ChatCompletionResult = { text: respMessage?.content || '' };
+    let generatedCompletion: ChatCompletionResult = {
+      text: respMessage?.content ?? '',
+    };
 
     // if function call is requested by ChatGPT, execute
-    if (respMessage?.function_call) {
-      const funcCall = respMessage.function_call
-      if (!funcCall) return { text: '' };
-      const funcCallResult = JSON.stringify(await this.functionCall(funcCall))
-      const requestMessages = [
-        ({ ...respMessage } as ChatCompletionRequestMessage),
+    if (respMessage?.function_call != null) {
+      const funcCall = respMessage.function_call;
+      const funcCallResult = JSON.stringify(await this.functionCall(funcCall));
+      const requestMessages: ChatCompletionRequestMessage[] = [
+        { ...respMessage },
         {
           role: 'function',
           name: funcCall.name,
           content: funcCallResult,
-        } as ChatCompletionRequestMessage
+        },
       ];
-      generatedCompletion = await this.requestChatCompletion(requestMessages, user)
-      generatedCompletion.funcRequest = JSON.stringify(funcCall)
-      generatedCompletion.funcResponse = funcCallResult
+      generatedCompletion = await this.requestChatCompletion(
+        requestMessages,
+        user
+      );
+      generatedCompletion.funcRequest = JSON.stringify(funcCall);
+      generatedCompletion.funcResponse = funcCallResult;
     } else {
       if (generatedCompletion.text != null) {
         this.chatMemories.enqueue({
@@ -154,7 +172,7 @@ export class ChatGPT {
             content: prompt,
           },
         ])
-        .filter((m) => m.content && m.content.length > 0);
+        .filter((m) => m.content != null && m.content.length > 0);
 
       console.log(messages);
 
@@ -164,19 +182,25 @@ export class ChatGPT {
         content: prompt,
       });
 
-      const generatedCompletion = await this.requestChatCompletion(messages, user);
+      const generatedCompletion = await this.requestChatCompletion(
+        messages,
+        user
+      );
 
-      let resultText = ''
-      if (generatedCompletion.funcRequest) {
-        resultText += '```\nFunction Call:\n' + generatedCompletion.funcRequest + '\n```\n'
+      let resultText = '';
+      if (generatedCompletion.funcRequest != null) {
+        resultText +=
+          '```\nFunction Call:\n' + generatedCompletion.funcRequest + '\n```\n';
       }
-      if (generatedCompletion.funcResponse) {
-        resultText += '```\nFunction Result:\n' + generatedCompletion.funcResponse + '\n```\n\n'
+      if (generatedCompletion.funcResponse != null) {
+        resultText +=
+          '```\nFunction Result:\n' +
+          generatedCompletion.funcResponse +
+          '\n```\n\n';
       }
-      resultText += generatedCompletion.text
+      resultText += generatedCompletion.text;
 
-      return resultText
-
+      return resultText;
     } catch (error) {
       console.error('Error calling ChatGPT API:', error);
       throw error;
